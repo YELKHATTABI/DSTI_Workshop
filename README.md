@@ -47,7 +47,8 @@ On Windows
 ```
 example
 ```
-PS C:\Users\yassi\MyWorkSpace> .\myenv\Scripts\activate                                                                                                   (myenv) PS C:\Users\yassi\MyWorkSpace>
+PS C:\Users\yassi\MyWorkSpace> .\myenv\Scripts\activate
+(myenv) PS C:\Users\yassi\MyWorkSpace>
 ```
 
 On Linux and MacOS
