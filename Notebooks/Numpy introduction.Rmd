@@ -1,0 +1,392 @@
+---
+jupyter:
+  jupytext:
+    text_representation:
+      extension: .Rmd
+      format_name: rmarkdown
+      format_version: '1.2'
+      jupytext_version: 1.5.2
+  kernelspec:
+    display_name: Python 3
+    language: python
+    name: python3
+---
+
+# Numpy
+
+```{python}
+import numpy as np
+```
+
+## Why numpy? 
+- very convenient to work with arrays like format (vectors, matrices)
+- very optimized for numerical operations 
+- has a complet easy to use methods for all the commun array operations
+
+```{python}
+l = list(range(10000000))
+```
+
+```{python}
+# %%timeit
+sum(l)
+```
+
+```{python}
+l_array= np.array(l,dtype=np.int)
+```
+
+```{python}
+# %%timeit
+l_array.sum()
+```
+
+## How to create a numpy array
+
+```{python}
+l_array = np.array(l)
+```
+
+```{python}
+l_array
+```
+
+```{python}
+type(l_array)
+```
+
+Basic operations on an array
+
+```{python}
+l_array.sum()
+```
+
+```{python}
+l_array.mean()
+```
+
+```{python}
+l_array.max()
+```
+
+```{python}
+l_array**2
+```
+
+```{python}
+np.power(l_array,2)
+```
+
+## Multidemensional array
+
+```{python}
+nd_list = [
+    [10,12,4],
+    [24,5,19],
+]
+```
+
+```{python}
+nd_array = np.array(nd_list,dtype=np.int)
+```
+
+```{python}
+nd_array.shape
+```
+
+```{python}
+len(nd_array)
+```
+
+## basic operations between 2 elements
+
+```{python}
+a = np.array([
+    [15,8,70],
+    [6,89,4]
+])
+```
+
+```{python}
+b = np.array([
+    [-8,7,74],
+    [61,8,41]
+])
+```
+
+```{python}
+a
+```
+
+```{python}
+b
+```
+
+```{python}
+a + b
+```
+
+```{python}
+a * b
+```
+
+```{python}
+a/b
+```
+
+```{python}
+np.matmul(a,np.transpose(b))
+```
+
+## How to access elements, indexing and slicing
+
+```{python}
+a
+```
+
+```{python}
+# accessing element on the first row, second column
+a[0,1]
+```
+
+```{python}
+a[:,1:]
+```
+
+```{python}
+a[1,1:]
+```
+
+## Creating usefull matrices quickly
+
+
+### Matrix of zerros
+
+```{python}
+c = np.zeros_like(a)
+```
+
+```{python}
+z = np.zeros((2,2),dtype=int)
+```
+
+```{python}
+z
+```
+
+### Ones
+
+```{python}
+np.ones((5,4))
+```
+
+### Identity
+
+```{python}
+np.eye(5)
+```
+
+### Braodcasting
+![image.png](attachment:image.png)
+
+```{python}
+a
+```
+
+```{python}
+a + 10 
+```
+
+```{python}
+a + [10,5,4]
+```
+
+```{python}
+np.array([
+    [10,5,4],
+    [10,5,4]
+])
+```
+
+```{python}
+a + np.array([[4],[5]])
+```
+
+```{python}
+np.array([3,6]) + np.array([[4],[5]])
+```
+
+```{python}
+np.sqrt(a)
+```
+
+```{python}
+x = np.ones((5,5))
+```
+
+```{python}
+x
+```
+
+## Linear algebra with numpy
+
+```{python}
+# np.linalg?
+```
+
+```{python}
+np.matmul(x,2*np.eye(5))
+```
+
+```{python}
+np.eye(3)
+```
+
+```{python}
+np.linalg.det(np.eye(3))
+```
+
+```{python}
+np.linalg.inv(np.eye(3))
+```
+
+## Max and argmax
+
+```{python}
+a
+```
+
+```{python}
+a.max()
+```
+
+```{python}
+a.max(axis=0)
+```
+
+```{python}
+a.max(axis=1)
+```
+
+```{python}
+a.argmax(axis=0)
+```
+
+```{python}
+a.argmax(axis=1)
+```
+
+```{python}
+a
+```
+
+```{python}
+list_indexes = []
+for i in range(a.shape[0]):
+    for j in range(a.shape[1]):
+        if a[i,j]>50:
+            print(f"the element {a[i,j]} in the position {i},{j} is higher than 50")
+            list_indexes.append((i,j))
+```
+
+```{python}
+list_indexes
+```
+
+## Conditional indexing
+
+```{python}
+a[a > 50] = 50
+```
+
+```{python}
+a
+```
+
+```{python}
+np.isnan(a)
+```
+
+```{python}
+r = np.array([1,2,3,4])
+f = np.array([5,7,9,6])
+x = np.array([6,8,7,3])
+```
+
+```{python}
+r.shape
+```
+
+```{python}
+r_square = r.reshape(2,2)
+```
+
+```{python}
+r_square
+```
+
+```{python}
+r_square.flatten()
+```
+
+```{python}
+r_square.ravel()
+```
+
+```{python}
+np.ones((4,5,3)).ravel().shape
+```
+
+```{python}
+np.array([r,f,x])
+```
+
+```{python}
+matrix_3d = np.array([
+    [
+        [1,4,5],
+        [574,47,96],
+        [8,96,36],
+    ],
+])
+```
+
+```{python}
+matrix_3d
+```
+
+```{python}
+np.array([[1],[1],[1]])
+```
+
+```{python}
+np.array([[1],[2],[5]])
+```
+
+```{python}
+a = np.array([[[1,5,7],[5,8,9],]])
+```
+
+```{python}
+a.shape
+```
+
+```{python}
+a.shape
+```
+
+```{python}
+b = np.array([[1,2,3]])
+```
+
+```{python}
+b
+```
+
+```{python}
+b.shape
+```
+
+```{python}
+
+```

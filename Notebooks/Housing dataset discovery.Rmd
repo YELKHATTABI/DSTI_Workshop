@@ -1,0 +1,80 @@
+---
+jupyter:
+  jupytext:
+    text_representation:
+      extension: .Rmd
+      format_name: rmarkdown
+      format_version: '1.2'
+      jupytext_version: 1.5.2
+  kernelspec:
+    display_name: 'Python 3.7.3 64-bit (''sensei'': venv)'
+    language: python
+    name: python37364bitsenseivenv79580c1d9c1f40f58bad8922b1ba7adc
+---
+
+```{python}
+import pandas as pd
+import numpy as np
+from matplotlib import pyplot as plt
+import seaborn as sns
+```
+
+```{python}
+df = pd.read_csv("../datasets/housing.csv")
+```
+
+```{python}
+df
+```
+
+```{python}
+df.isna().sum()
+```
+
+```{python}
+df[df.total_bedrooms.isna()].index
+```
+
+```{python}
+df = df.drop(index=df[df.total_bedrooms.isna()].index)
+```
+
+```{python}
+sns.distplot(df.median_house_value)
+plt.show()
+```
+
+```{python}
+sns.distplot(df.median_income)
+plt.show()
+```
+
+##### df.median_income.describe()
+
+```{python}
+plt.figure(figsize=(10,10))
+sns.scatterplot(y=df.median_income,x = df.median_house_value)
+plt.show()
+```
+
+```{python}
+df.columns
+```
+
+```{python}
+df.population/df.total_bedrooms
+```
+
+```{python}
+fig,ax = plt.subplots()
+ax.scatter(y=df.median_income,x = df.median_house_value,s=df.population/df.total_bedrooms)
+ax.set_xlabel('median house value', fontsize=10)
+ax.set_ylabel('median income', fontsize=10)
+
+plt.show()
+
+```
+
+```{python}
+
+```

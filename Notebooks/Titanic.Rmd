@@ -1,0 +1,642 @@
+---
+jupyter:
+  jupytext:
+    text_representation:
+      extension: .Rmd
+      format_name: rmarkdown
+      format_version: '1.2'
+      jupytext_version: 1.5.2
+  kernelspec:
+    display_name: Python 3
+    language: python
+    name: python3
+---
+
+```{python}
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+```
+
+### Import data
+
+```{python}
+
+```
+
+```{python}
+df = pd.read_csv("../data/titanic.csv",sep=",",index_col="PassengerId")
+```
+
+```{python}
+df.head(10)
+```
+
+```{python}
+df.tail(10)
+```
+
+```{python}
+df.describe()
+```
+
+```{python}
+df.isna().sum()
+```
+
+```{python}
+df = df.drop(columns="Cabin")
+```
+
+```{python}
+len(df)
+```
+
+```{python}
+df.isna().sum()
+```
+
+```{python}
+df.loc[df.Embarked.isna(),:]
+```
+
+```{python}
+df.loc[df.Embarked.isna(),:].index
+```
+
+```{python}
+df = df.drop(index=df.loc[df.Embarked.isna(),:].index)
+```
+
+```{python}
+df.isna().sum()
+```
+
+```{python}
+raw_df = df.copy()
+```
+
+```{python}
+df.Pclass.value_counts()
+```
+
+```{python}
+df.groupby(["Pclass","Sex"]).mean().Age
+```
+
+```{python}
+df.loc[df.Age.isna(),["Pclass","Sex"]]
+```
+
+```{python}
+#age_guesser([1,"female"]) -->  34
+```
+
+```{python}
+average_ages = df.groupby(["Pclass","Sex"]).mean().Age.astype(int).to_dict()
+```
+
+```{python}
+average_ages.keys()
+```
+
+```{python}
+average_ages[(1,"female")]
+```
+
+def age_guesser(Pclass_sex):
+    pclass,sex = Pclass_sex
+    df_p_sex = df.loc[(df.Pclass == pclass) & (df.Sex == sex)]
+    age = df_p_sex.Age.mean()
+    return age
+
+```{python}
+def age_guesser(Pclass_sex):
+    Pclass_sex = tuple(Pclass_sex)
+    age = average_ages[Pclass_sex]
+    return age
+```
+
+```{python}
+age_guesser([1,"female"])
+```
+
+```{python}
+age_guesser([3,"male"])
+```
+
+```{python}
+df = raw_df.copy()
+for pclass,sex in average_ages.keys():
+    temp_df = df.loc[(df.Pclass==pclass) & (df.Sex == sex),:]
+    missing_values_index = temp_df.loc[temp_df.Age.isna()].index
+    df.loc[missing_values_index,"Age"] = age_guesser([pclass,sex])
+```
+
+```{python}
+ df.groupby(["Pclass","Sex"]).mean().Age.astype(int).to_dict()
+```
+
+```{python}
+average_ages
+```
+
+```{python}
+raw_df.Age.isna().sum()
+```
+
+```{python}
+df = raw_df.copy()
+print("State of missing values before processing")
+print(df.Age.isna().sum())
+for pclass,sex in average_ages.keys():
+    df.loc[(df.Pclass==pclass) & (df.Sex == sex),"Age"] = (
+        df.loc[(df.Pclass==pclass) & (df.Sex == sex),"Age"].fillna(age_guesser([pclass,sex]))
+    )
+print("State of missing values after processing")
+print(df.Age.isna().sum())
+```
+
+```{python}
+df.groupby(["Pclass","Sex"]).mean().Age.astype(int).to_dict()
+```
+
+```{python}
+df = raw_df.copy()
+```
+
+```{python}
+pd.DataFrame.apply()
+```
+
+```{python}
+df.loc[df.Age.isna(),"Age"] = df.loc[df.Age.isna(),["Pclass","Sex"]].apply(age_guesser,axis=1)
+```
+
+```{python}
+df.Age.isna().sum()
+```
+
+```{python}
+df.groupby(["Pclass","Sex"]).mean().Age.astype(int).to_dict()
+```
+
+```{python}
+df.isna().sum()
+```
+
+Plots
+
+```{python}
+x = np.arange(-100,100)
+y = x**2
+```
+
+```{python}
+plt.figure(figsize=(10,5))
+plt.plot(x,y,'g')
+plt.plot(x,x**3,'r')
+plt.title("x square plt")
+plt.xlabel("x")
+plt.ylabel("y")
+plt.xlim([-150,150])
+plt.grid()
+plt.show()
+```
+
+```{python}
+plt.figure(figsize=(10,5))
+plt.scatter(df.Age,df.Fare)
+plt.title("Age vs Fare")
+plt.xlabel("Age")
+plt.ylabel("Fare")
+plt.show()
+```
+
+```{python}
+df.Sex.value_counts().index
+```
+
+```{python}
+plt.bar(x=df.Sex.value_counts().index,height=df.Sex.value_counts())
+plt.show()
+```
+
+```{python}
+plt.pie(df.Sex.value_counts(),labels=df.Sex.value_counts().index,autopct='%1.2f%%',explode=[0.2,0])
+plt.show()
+```
+
+```{python}
+sns.histplot(x="Sex",hue="Survived",multiple="stack",data=df)
+plt.show()
+```
+
+```{python}
+sns.histplot(x="Pclass",hue="Survived",multiple="stack",data=df)
+plt.show()
+```
+
+```{python}
+sns.displot(df.Age)
+```
+
+```{python}
+plt.figure(figsize=(20,10))
+sns.boxplot(x=df.Pclass,y=df.Fare)
+plt.show()
+```
+
+```{python}
+df[df.Fare == df.Fare.max() ]
+```
+
+```{python}
+df_processed = df.drop(columns=["Name","Ticket"])
+```
+
+```{python}
+df_processed
+```
+
+```{python}
+df_processed.loc[:,["Sex"]] = pd.get_dummies(df.Sex,drop_first=True).values
+```
+
+```{python}
+type(pd.get_dummies(df.Sex,drop_first=True).values)
+```
+
+```{python}
+df_processed
+```
+
+```{python}
+df_processed = df_processed.drop(columns="Embarked")
+```
+
+```{python}
+df_processed = pd.concat([df_processed,pd.get_dummies(df_processed.Pclass)],axis=1).drop(columns="Pclass")
+```
+
+```{python}
+df_processed
+```
+
+```{python}
+l =["name","age"]
+```
+
+```{python}
+name,age = l
+```
+
+```{python}
+name
+```
+
+```{python}
+age
+```
+
+```{python}
+from sklearn.model_selection import train_test_split
+```
+
+```{python}
+df_train, df_test = train_test_split(df_processed,test_size = 0.2)
+```
+
+```{python}
+len(df_processed)
+```
+
+```{python}
+len(df_train)
+```
+
+```{python}
+len(df_test)
+```
+
+```{python}
+df_train
+```
+
+```{python}
+print(df_processed.Sex.mean())
+print(df_train.Sex.mean())
+print(df_test.Sex.mean())
+```
+
+```{python}
+print(df_processed.Survived.mean())
+print(df_train.Survived.mean())
+print(df_test.Survived.mean())
+```
+
+```{python}
+df_train.columns
+```
+
+```{python}
+X_train = df_train.loc[:,['Sex', 'Age', 'SibSp', 'Parch', 'Fare', 1, 2, 3]].values
+y_train = df_train.Survived.values
+```
+
+```{python}
+X_test = df_test.loc[:,['Sex', 'Age', 'SibSp', 'Parch', 'Fare', 1, 2, 3]].values
+y_test = df_test.Survived.values
+```
+
+```{python}
+from sklearn.linear_model import LogisticRegression
+```
+
+```{python}
+lr_model = LogisticRegression(random_state=0,max_iter=1000)
+```
+
+```{python}
+lr_model.fit(X=X_train, y=y_train)
+```
+
+```{python}
+y_test_predicted = lr_model.predict(X_test)
+```
+
+```{python}
+y_test_predicted
+```
+
+```{python}
+y_test
+```
+
+```{python}
+(y_test_predicted == y_test).sum()/len(y_test)
+```
+
+```{python}
+from sklearn.metrics import confusion_matrix
+```
+
+```{python}
+cf = pd.DataFrame(
+    columns=["y_test_0","y_test_1"],index=["y_pred_0","y_pred_1"]
+)
+```
+
+```{python}
+cf.loc[:,:] = confusion_matrix(y_true= y_test,y_pred= y_test_predicted)
+```
+
+```{python}
+cf
+```
+
+```{python}
+cf/len(y_test)
+```
+
+```{python}
+from sklearn.metrics import recall_score, precision_score
+```
+
+```{python}
+recall_score(y_true=y_test, y_pred=y_test_predicted)
+```
+
+```{python}
+47/(23+47)
+```
+
+```{python}
+precision_score(y_true=y_test, y_pred=y_test_predicted)
+```
+
+```{python}
+47/(47+16)
+```
+
+```{python}
+from sklearn.metrics import classification_report
+```
+
+```{python}
+report =classification_report(y_true=y_test, y_pred=y_test_predicted)
+```
+
+```{python}
+print(report)
+```
+
+```{python}
+from sklearn.neural_network import MLPClassifier
+```
+
+```{python}
+X_train.shape
+```
+
+```{python}
+nn_model = MLPClassifier(hidden_layer_sizes=(20,10),max_iter=1000)
+```
+
+```{python}
+nn_model.fit(X=X_train,y=y_train)
+```
+
+```{python}
+y_test_predicted_nn = nn_model.predict(X_test)
+```
+
+```{python}
+report_nn = classification_report(y_pred=y_test_predicted_nn,y_true=y_test)
+```
+
+```{python}
+from sklearn.tree import DecisionTreeClassifier
+```
+
+```{python}
+dt_model = DecisionTreeClassifier()
+```
+
+```{python}
+dt_model.fit(X=X_train,y=y_train)
+```
+
+```{python}
+y_test_predicted_dt = dt_model.predict(X_test)
+```
+
+```{python}
+report_dt = classification_report(y_pred=y_test_predicted_dt,y_true=y_test)
+```
+
+```{python}
+from sklearn.ensemble import RandomForestClassifier
+```
+
+```{python}
+rf_model = RandomForestClassifier()
+```
+
+```{python}
+rf_model.fit(X=X_train,y=y_train)
+```
+
+```{python}
+y_test_predicted_rf = rf_model.predict(X_test)
+```
+
+```{python}
+report_rf = classification_report(y_pred=y_test_predicted_rf,y_true=y_test)
+```
+
+```{python}
+print("Report of neural logistic regression")
+
+print(report)
+```
+
+```{python}
+print("Report of neural network model")
+print(report_nn)
+```
+
+```{python}
+print("Report of Decision tree classifier model")
+print(report_dt)
+```
+
+```{python}
+print("Report of Random forest model")
+print(report_rf)
+```
+
+```{python}
+df_train.Fare.max()
+```
+
+```{python}
+df_test.Fare.max()
+```
+
+Let's remove outliers from our data
+
+```{python}
+df_train_no_outliers = df_train.drop(index=df_train[df_train.Fare>300].index)
+```
+
+```{python}
+df_train[df_train.Fare>300]
+```
+
+```{python}
+df_test_no_outliers = df_test.drop(index=df_test[df_test.Fare>300].index)
+```
+
+```{python}
+df_test[df_test.Fare>300]
+```
+
+```{python}
+X_train_no_outliers = df_train_no_outliers.loc[:,['Sex', 'Age', 'SibSp', 'Parch', 'Fare', 1, 2, 3]].values
+y_train_no_outliers = df_train_no_outliers.Survived.values
+```
+
+```{python}
+X_test_no_outliers = df_test_no_outliers.loc[:,['Sex', 'Age', 'SibSp', 'Parch', 'Fare', 1, 2, 3]].values
+y_test_no_outliers = df_test_no_outliers.Survived.values
+```
+
+Train decision tree model with no outliers
+
+```{python}
+dt_no_model = DecisionTreeClassifier()
+```
+
+```{python}
+dt_no_model.fit(X=X_train_no_outliers,y=y_train_no_outliers)
+```
+
+```{python}
+y_test_predicted_dt_no = dt_no_model.predict(X_test_no_outliers)
+```
+
+```{python}
+report_dt_no = classification_report(y_pred=y_test_predicted_dt_no,y_true=y_test_no_outliers)
+```
+
+```{python}
+print(report_dt_no)
+```
+
+```{python}
+y_test_predicted_dt_o_no = dt_model.predict(X_test_no_outliers)
+```
+
+```{python}
+report_dt_o_no = classification_report(y_pred=y_test_predicted_dt_o_no,y_true=y_test_no_outliers)
+```
+
+```{python}
+print(report_dt_o_no)
+```
+
+```{python}
+cf_no = pd.DataFrame(
+    columns=["y_test_0","y_test_1"],index=["y_pred_0","y_pred_1"]
+)
+
+cf_no.loc[:,:] = confusion_matrix(y_true= y_test_no_outliers,y_pred= y_test_predicted_dt_no)
+
+cf_no
+```
+
+```{python}
+cf_o_no = pd.DataFrame(
+    columns=["y_test_0","y_test_1"],index=["y_pred_0","y_pred_1"]
+)
+
+cf_o_no.loc[:,:] = confusion_matrix(y_true= y_test_no_outliers,y_pred= y_test_predicted_dt_o_no)
+
+cf_o_no
+```
+
+```{python}
+y_test_predicted_dt_no_o = dt_no_model.predict(X_test)
+```
+
+```{python}
+report_dt_no_o = classification_report(y_pred=y_test_predicted_dt_no,y_true=y_test_no_outliers)
+```
+
+```{python}
+print(report_dt_no_o)
+```
+
+```{python}
+print(report_dt)
+```
+
+```{python}
+import plotly.express as px
+```
+
+```{python}
+df = px.data.election()
+geojson = px.data.election_geojson()
+
+```
+
+```{python}
+geojson["features"]
+```
+
+```{python}
+
+```

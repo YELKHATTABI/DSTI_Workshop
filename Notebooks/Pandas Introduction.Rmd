@@ -1,0 +1,309 @@
+---
+jupyter:
+  jupytext:
+    text_representation:
+      extension: .Rmd
+      format_name: rmarkdown
+      format_version: '1.2'
+      jupytext_version: 1.5.2
+  kernelspec:
+    display_name: Python 3
+    language: python
+    name: python3
+---
+
+```{python}
+import pandas as pd
+import numpy as np
+```
+
+## Pandas Series
+
+```{python}
+S = pd.Series(np.array([10,20,30,40,50]),index=["lundi","mardi","mercredi","jeudi","vendredi"])
+```
+
+```{python}
+S
+```
+
+### Accessing elements
+- Using the order of values
+- Using the index
+
+```{python}
+S[3]
+```
+
+```{python}
+S["mercredi"]
+```
+
+### To get the indexes
+
+```{python}
+S.index
+```
+
+### To get the values
+
+```{python}
+S.values
+```
+
+Note the the values are returned as numpy array
+
+
+### To get information about data
+
+```{python}
+S.describe()
+```
+
+```{python}
+S.sum()
+```
+
+```{python}
+S.mean()
+```
+
+```{python}
+S.max()
+```
+
+```{python}
+S.min()
+```
+
+```{python}
+S.median()
+```
+
+```{python}
+S.hist(bins=10)
+```
+
+## Pandas DataFrame
+
+
+### Creating data frame (from numpy array)
+
+```{python}
+df = pd.DataFrame(np.array([
+                    ["x",8,7],
+                    ["y",8,9],
+                ],),
+             columns=["a","b","c"],
+                index = ["line1","line2"]
+            )
+```
+
+```{python}
+df
+```
+
+```{python}
+print(df)
+```
+
+### Accessing elements using loc and iloc
+
+```{python}
+df.loc["line1","a"] # getting an element using the index and the column name 
+```
+
+```{python}
+df.iloc[0,0]
+```
+
+```{python}
+df.loc["line2","c"]
+```
+
+### Slicing
+
+```{python}
+df.iloc[1,2] # slicing on 1 dimension
+```
+
+```{python}
+df.iloc[1:2,1:3] # Slicing on 2 dimensions
+```
+
+Create dataframe from dictionnary
+
+```{python}
+df2 = pd.DataFrame({"a":[1,2,5],"b":[5,7,8]},index = ["id1","id2","id3"])
+```
+
+```{python}
+df2.columns
+```
+
+```{python}
+df2.index
+```
+
+```{python}
+df2.loc[:,'a']
+```
+
+```{python}
+df2.a
+```
+
+```{python}
+df2["a"]
+```
+
+```{python}
+df2.iloc[:2,:]
+```
+
+```{python}
+df2.loc[["id1","id2"],["a","b"]]
+```
+
+```{python}
+df2["a"]
+```
+
+```{python}
+df2[["a","b"]]
+```
+
+```{python}
+df2["c"] = [78,5,6]
+```
+
+```{python}
+df2
+```
+
+```{python}
+df2.loc[:,'d']=[8,9,3]
+```
+
+```{python}
+df2
+```
+
+```{python}
+df2.loc[["id2","id3"],"e"] =[5,8]
+```
+
+```{python}
+df2
+```
+
+```{python}
+df2.isna()
+```
+
+```{python}
+df2.loc[[True,False,True],[False,True,True,False,False]]
+```
+
+```{python}
+df2[df2.a > 4]
+```
+
+```{python}
+df2[df2.isna()]
+```
+
+```{python}
+df2.isna()
+```
+
+```{python}
+df2.isna().sum()
+```
+
+Load CSV with pandas
+
+```{python}
+pwd
+```
+
+```{python}
+housing = pd.read_csv("../datasets/housing.csv",sep=",")
+```
+
+```{python}
+housing
+```
+
+```{python}
+housing.head(10)
+```
+
+```{python}
+housing.tail(10)
+```
+
+```{python}
+housing.describe()
+```
+
+```{python}
+housing.isna().sum()
+```
+
+```{python}
+housing.ocean_proximity.unique()
+```
+
+```{python}
+housing.ocean_proximity.value_counts()
+```
+
+- Find the houses that are on Ilands
+- Find the most expensive house
+- Find the mean house_value for each category of houses based on the approximity of the ocean
+- Find houses that have NaN value is some of the columns (see total_bedrooms)
+- Propose a way to replace Nan Values, and replace them
+- Histogram of population per house (see matplotlib library)
+- Plot income value vs house value
+
+
+```{python}
+housing.loc[:,"population"] = housing.population.astype(int)
+```
+
+```{python}
+housing
+```
+
+```{python}
+housing.loc[:,"bedroom_room_ration"] = housing.total_bedrooms/housing.total_rooms
+```
+
+```{python}
+housing.to_csv("../datasets/processed_housing.csv",index=None)
+```
+
+```{python}
+housing[housing.ocean_proximity == "INLAND"]
+```
+
+```{python}
+housing.columns
+```
+
+```{python}
+housing[housing.median_house_value == housing.median_house_value.max()]
+```
+
+```{python}
+housing.median_house_value.max()
+```
+
+```{python}
+housing[housing.total_bedrooms.isna()]
+```
+
+```{python}
+
+```
