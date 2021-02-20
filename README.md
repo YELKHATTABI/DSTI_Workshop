@@ -1,6 +1,15 @@
 # DSTI_Workshop
 Python Tutorial
 
+## Activate script execution in powershell
+
+Open powershell as administrator and execute the following command 
+```
+Set-ExecutionPolicy unrestricted
+```
+
+the accepte all by typing `A`
+
 ## Istalling Python
 Chose the python version that you want (recomended are 3.7 or 3.8)
 https://www.python.org/downloads/windows/
@@ -36,7 +45,10 @@ PS C:\Users\yassi\MyWorkSpace> virtualenv myenv                                 
   activators BashActivator,BatchActivator,FishActivator,PowerShellActivator,PythonActivator,XonshActivator
 PS C:\Users\yassi\MyWorkSpace> .\myenv\Scripts\activate      
 ```
-
+If this does not work you can try
+```
+python -m virtualenv myenv
+```
 
 to activate the virtual environment
 
