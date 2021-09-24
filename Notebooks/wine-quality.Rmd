@@ -1,0 +1,75 @@
+---
+jupyter:
+  jupytext:
+    text_representation:
+      extension: .Rmd
+      format_name: rmarkdown
+      format_version: '1.2'
+      jupytext_version: 1.5.2
+  kernelspec:
+    display_name: 'Python 3.7.3 64-bit (''sensei'': venv)'
+    language: python
+    name: python37364bitsenseivenv79580c1d9c1f40f58bad8922b1ba7adc
+---
+
+```{python}
+import pandas as pd
+import seaborn as sns
+import numpy as np
+import plotly.express as px
+from matplotlib import pyplot as plt
+# %matplotlib inline
+```
+
+```{python}
+file_path = "../datasets/winequality-red.csv"
+```
+
+```{python}
+df = pd.read_csv(file_path)
+```
+
+```{python}
+df
+```
+
+```{python}
+df.describe()
+```
+
+```{python}
+df.quality.value_counts()
+```
+
+```{python}
+sns.displot(data=df,x="alcohol")
+```
+
+```{python}
+sns.displot(data=df,x="quality")
+```
+
+```{python}
+sns.scatterplot(data=df,x="alcohol",y="quality")
+```
+
+```{python}
+from plotly.offline import init_notebook_mode, iplot
+from plotly.graph_objs import *
+
+init_notebook_mode(connected=True)
+```
+
+```{python}
+px.histogram(data_frame=df,x="alcohol",facet_row="quality")
+```
+
+```{python}
+plt.figure(figsize=(10,10))
+sns.heatmap(df.corr(),annot=True)
+plt.show()
+```
+
+```{python}
+
+```
