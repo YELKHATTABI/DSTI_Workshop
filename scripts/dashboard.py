@@ -12,57 +12,65 @@ app = dash.Dash("Dashboard", external_stylesheets=external_stylesheets)
 
 # assume you have a "long-form" data frame
 # see https://plotly.com/python/px-arguments/ for more options
-df = pd.DataFrame({
-    "Fruit": ["Apples", "Oranges", "Bananas", "Apples", "Oranges", "Bananas"],
-    "Amount": [4, 1, 2, 2, 4, 5],
-    "City": ["SF", "SF", "SF", "Montreal", "Montreal", "Montreal"]
-})
+file_path = "C:/Users/dsti0/DSTI_Workshop/datasets/processed_retail_dataset.csv"
 
-fig1 = px.bar(df, x="Fruit", y="Amount", color="City", barmode="group")
+def load_data(file_path_link):
+    """
+    """
+    processed_df = pd.read_csv(file_path_link,index_col="InvoiceDate")
+    processed_df.index = pd.to_datetime(processed_df.index)
+    return processed_df
 
-fig2 = px.bar(df, x="Fruit", y="Amount", color="City", barmode="stack")
+
+data = load_data(file_path)
+
+agg_retail = data.resample("M").agg({"Total_value":"sum","InvoiceNo":"count"})
+fig = px.line(agg_retail, y="Total_value",hover_data=["InvoiceNo"])
 
 
 app.layout = html.Div(
     children=[
         html.H1(
             id="title",
-            children='Hello Dash!!!'),
-        html.Div(
-            id="paragraph",
-            children='''
-            Dash: A web application framework for Python.
-            '''
-        ),
+            children='Retail data analysis'),
+        
         dcc.Graph(
             id='graph',
-            figure=fig1,
+            figure=fig,
+        ),
+        dcc.DatePickerSingle(
+            id='start_date',
+            min_date_allowed=data.index.min(),
+            max_date_allowed=data.index.max(),
+            date=data.index.min()
+        ),
+        dcc.DatePickerSingle(
+            id='end_date',
+            min_date_allowed=data.index.min(),
+            max_date_allowed=data.index.max(),
+            date=data.index.max()
         ),
         dcc.RadioItems(
-            id="choice",
+            id="precision",
             options=[
-                {'label': 'Stacked Fig', 'value': 1},
-                {'label': 'Group Fig', 'value': 2},
+                {'label': 'Month', 'value': "M"},
+                {'label': 'Day', 'value': "D"},
             ],
-            value=1
+            value="M"
         )  
 ])
 
 @app.callback(
     Output('graph','figure'),
-    Input('choice','value')
-
+    [Input('precision','value'),
+    Input('start_date','date'),
+    Input('end_date','date')]
 )
-def update_graph(choice_value):
-    if choice_value == 1:
-        updated_fig = fig1
-    elif choice_value ==2:
-        updated_fig = fig2
+def update_graph(precision,start_date,end_date):    
+    agg_retail = data.resample(precision).agg({"Total_value":"sum","InvoiceNo":"count"})
+    fig = px.line(agg_retail.loc[start_date:end_date], y="Total_value",hover_data=["InvoiceNo"])
 
-    return updated_fig
-
-
-
+    return fig
 
 
 if __name__ == '__main__':
